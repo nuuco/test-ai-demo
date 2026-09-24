@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebGPU Test</title>
+</head>
+<body>
+  <h1>WebGPU Adapter Test</h1>
+  <pre id="result">테스트 중...</pre>
+
+  <script>
+    (async () => {
+      const out = document.getElementById("result");
+
+      try {
+        if (!navigator.gpu) {
+          out.textContent = "navigator.gpu: NO";
+          return;
+        }
+
+        const core = await navigator.gpu.requestAdapter();
+
+        const compatibility = await navigator.gpu.requestAdapter({
+          featureLevel: "compatibility"
+        });
+
+        let result =
+          "navigator.gpu: YES\n\n" +
+          "Core adapter: " + (core ? "YES" : "NO") + "\n" +
+          "Compatibility adapter: " + (compatibility ? "YES" : "NO") + "\n";
+
+        if (core) {
+          result +=
+            "\n[Core limits]\n" +
+            "maxBufferSize: " + core.limits.maxBufferSize + "\n" +
+            "maxStorageBufferBindingSize: " +
+            core.limits.maxStorageBufferBindingSize + "\n";
+        }
+
+        if (compatibility) {
+          result +=
+            "\n[Compatibility limits]\n" +
+            "maxBufferSize: " +
+            compatibility.limits.maxBufferSize + "\n" +
+            "maxStorageBufferBindingSize: " +
+            compatibility.limits.maxStorageBufferBindingSize + "\n";
+        }
+
+        out.textContent = result;
+      } catch (e) {
+        out.textContent = "ERROR:\n" + e.stack;
+      }
+    })();
+  </script>
+</body>
+</html>
